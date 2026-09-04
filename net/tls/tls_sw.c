@@ -707,7 +707,7 @@ more_data:
 	if (psock->eval == __SK_NONE) {
 		delta = msg->sg.size;
 		psock->eval = sk_psock_msg_verdict(sk, psock, msg);
-		if (delta < msg->sg.size)
+		if (delta > msg->sg.size)
 			delta -= msg->sg.size;
 		else
 			delta = 0;
