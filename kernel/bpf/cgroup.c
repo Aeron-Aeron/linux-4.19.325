@@ -1353,6 +1353,9 @@ static bool __cgroup_bpf_prog_array_is_empty(struct cgroup *cgrp,
 	struct bpf_prog_array *prog_array;
 	bool empty;
 
+	if (!cgrp)
+		return true;
+
 	rcu_read_lock();
 	prog_array = rcu_dereference(cgrp->bpf.effective[attach_type]);
 	empty = bpf_prog_array_is_empty(prog_array);
@@ -1403,7 +1406,7 @@ int __cgroup_bpf_run_filter_setsockopt(struct sock *sk, int *level,
 	 * attached to the hook so we don't waste time allocating
 	 * memory and locking the socket.
 	 */
-	if (!cgroup_bpf_enabled ||
+	if (!cgroup_bpf_enabled || !cgrp ||
 	    __cgroup_bpf_prog_array_is_empty(cgrp, BPF_CGROUP_SETSOCKOPT))
 		return 0;
 
@@ -1482,7 +1485,7 @@ int __cgroup_bpf_run_filter_getsockopt(struct sock *sk, int level,
 	 * attached to the hook so we don't waste time allocating
 	 * memory and locking the socket.
 	 */
-	if (!cgroup_bpf_enabled ||
+	if (!cgroup_bpf_enabled || !cgrp ||
 	    __cgroup_bpf_prog_array_is_empty(cgrp, BPF_CGROUP_GETSOCKOPT))
 		return retval;
 

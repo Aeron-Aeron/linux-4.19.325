@@ -1131,6 +1131,8 @@ _out:							\
 		migrate_disable();			\
 		rcu_read_lock();			\
 		_array = rcu_dereference(array);	\
+		if (unlikely(!_array))			\
+			goto _out;			\
 		_item = &_array->items[0];		\
 		while ((_prog = READ_ONCE(_item->prog))) {		\
 			if (unlikely(bpf_cgroup_storage_set(_item->cgroup_storage)))	\
@@ -1141,6 +1143,7 @@ _out:							\
 			_cn |= (ret & 2);		\
 			_item++;			\
 		}					\
+_out:							\
 		rcu_read_unlock();			\
 		migrate_enable();			\
 		if (_ret)				\
