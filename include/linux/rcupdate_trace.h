@@ -79,6 +79,23 @@ void call_rcu_tasks_trace(struct rcu_head *rhp, rcu_callback_t func);
 void synchronize_rcu_tasks_trace(void);
 void rcu_barrier_tasks_trace(void);
 
-#endif /* #ifdef CONFIG_TASKS_TRACE_RCU */
+#else /* #ifdef CONFIG_TASKS_TRACE_RCU */
+
+static inline void rcu_read_lock_trace(void) { }
+static inline void rcu_read_unlock_trace(void) { }
+static inline void call_rcu_tasks_trace(struct rcu_head *rhp, rcu_callback_t func)
+{
+	call_rcu(rhp, func);
+}
+static inline void synchronize_rcu_tasks_trace(void)
+{
+	synchronize_rcu();
+}
+static inline void rcu_barrier_tasks_trace(void)
+{
+	rcu_barrier();
+}
+
+#endif /* #else #ifdef CONFIG_TASKS_TRACE_RCU */
 
 #endif /* __LINUX_RCUPDATE_TRACE_H */
