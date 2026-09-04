@@ -89,6 +89,7 @@ bpf_sk_base_func_proto(enum bpf_func_id func_id);
 
 int copy_bpf_fprog_from_user(struct sock_fprog *dst, sockptr_t src, int len)
 {
+#ifdef CONFIG_COMPAT
 	if (in_compat_syscall()) {
 		struct compat_sock_fprog f32;
 
@@ -99,7 +100,9 @@ int copy_bpf_fprog_from_user(struct sock_fprog *dst, sockptr_t src, int len)
 		memset(dst, 0, sizeof(*dst));
 		dst->len = f32.len;
 		dst->filter = compat_ptr(f32.filter);
-	} else {
+	} else
+#endif
+	{
 		if (len != sizeof(*dst))
 			return -EINVAL;
 		if (copy_from_sockptr(dst, src, sizeof(*dst)))
